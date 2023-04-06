@@ -8,17 +8,8 @@ firebase_admin.initialize_app(cred)
 
 db = firestore.client()
 
-obj1 = {
-    "id": 1,
-    "uri": "test.com"
-}
+sites_ref = db.collection(u'sites_info')
+docs = sites_ref.stream()
 
-obj2 = {
-    "id":1,
-    "id_site": 1,
-    "type": "tag",
-    "content": "asas"
-}
-
-
-doc_ref = db.collection(u's')s.document()u''id_sites'
+for doc in docs:
+    print(f'${doc.id} => {doc.to_dict()}')
