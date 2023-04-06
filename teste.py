@@ -1,8 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
-from firebase import firebase
-
-firebase - firebase.FirebaseApplication('https://')
+import threading
 
 def get_meta_tags(soup):
     meta_tags = soup.find_all('meta')
@@ -29,7 +27,7 @@ def get_links(url, profundidade, contador):
     
     contador+=1
 
-    print(contador, url)
+    print(url)
 
     try:
         response = requests.get(url).content
@@ -45,13 +43,13 @@ def get_links(url, profundidade, contador):
         list_links = filter_https_links(list_links)
 
         for link in list_links:
-            get_links(link, profundidade, contador) 
+            thread = threading.Thread(target=get_links, args=(link, profundidade, contador))
+            thread.start()
     except:
         print("esse deu erro")
 
-    
+def get_links_thread(url, profundidade):
+    thread = threading.Thread(target=get_links, args=(url, profundidade, 0))
+    thread.start()
 
-get_links("https://g1.globo.com/", 2, 0) 
-
-
-
+get_links_thread("https://g1.globo.com/", 2)
