@@ -26,8 +26,7 @@ def get_links(url, profundidade, contador):
         return
     
     contador+=1
-
-    print(url)
+    print(contador, url)
 
     try:
         response = requests.get(url).content
@@ -41,15 +40,17 @@ def get_links(url, profundidade, contador):
 
         list_links = remove_repeated_items(list_links)
         list_links = filter_https_links(list_links)
+        
 
         for link in list_links:
             thread = threading.Thread(target=get_links, args=(link, profundidade, contador))
             thread.start()
     except:
         print("esse deu erro")
+        return
 
 def get_links_thread(url, profundidade):
     thread = threading.Thread(target=get_links, args=(url, profundidade, 0))
     thread.start()
 
-get_links_thread("https://g1.globo.com/", 2)
+get_links_thread("https://olhardigital.com.br/", 3)

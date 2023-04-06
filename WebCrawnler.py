@@ -1,8 +1,8 @@
 import requests
 from bs4 import BeautifulSoup
-from firebase import firebase
 
-firebase - firebase.FirebaseApplication('https://')
+
+#firebase - firebase.FirebaseApplication('https://')
 
 def get_meta_tags(soup):
     meta_tags = soup.find_all('meta')
@@ -51,7 +51,7 @@ def get_links(url, profundidade, contador):
 
     
 
-get_links("https://g1.globo.com/", 2, 0) 
+get_links("https://olhardigital.com.br/", 2, 0) 
 
 
 
