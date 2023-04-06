@@ -21,4 +21,4 @@ obj2 = {
 }
 
 
-doc_ref = db.collection(u's')s.document()u''id_si'
+doc_ref = db.collection(u's')s.document()u''id_sites'
