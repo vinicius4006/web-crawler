@@ -1,8 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
-
-
-#firebase - firebase.FirebaseApplication('https://')
+import threading
 
 def get_meta_tags(soup):
     meta_tags = soup.find_all('meta')
@@ -24,17 +22,20 @@ def filter_https_links(list_links):
     return filtered_links
 
 def get_links(url, profundidade, contador):  
-    if profundidade == contador:
-        return
-    
-    contador+=1
-
-    print(contador, url)
 
     try:
-        response = requests.get(url).content
+        #captura todos os dados da página e joga no banco de dados
+        response = requests.get(url, timeout=1).content
         soup = BeautifulSoup(response, 'html.parser')
+        print('/n',contador, url)       
 
+        # após essa página for capturada verifica se ela é a ultima, se sim ele retorna se não pega todos os links dela 
+        if profundidade == contador:
+            print('chegou na profundidade\n')
+            return
+    
+        contador+=1
+        
         list_links = []
         for tag_a in soup.find_all('a'):
             link = tag_a.get('href')
@@ -45,13 +46,19 @@ def get_links(url, profundidade, contador):
         list_links = filter_https_links(list_links)
 
         for link in list_links:
-            get_links(link, profundidade, contador) 
-    except:
-        print("esse deu erro")
+            thread = threading.Thread(target=get_links, args=(link, profundidade, contador))
+            thread.start()
 
+    except requests.exceptions.Timeout:
+        print("Timeout de conexão. ", url)
+        return
     
+    except Exception as e:
+        print("Ocorreu um erro:", e, url)
+        return
 
-get_links("https://olhardigital.com.br/", 2, 0) 
+def get_links_thread(url, profundidade):
+    thread = threading.Thread(target=get_links, args=(url, profundidade, 0))
+    thread.start()
 
-
-
+get_links_thread("https://olhardigital.com.br/", 2)
