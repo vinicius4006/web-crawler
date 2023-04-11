@@ -1,6 +1,5 @@
 import requests
 from bs4 import BeautifulSoup
-import threading
 
 def get_meta_tags(soup):
     meta_tags = soup.find_all('meta')
@@ -47,9 +46,11 @@ def get_links(url, profundidade, contador, lista):
             if link:
                 list_links.append(link)    
 
+        # tratando links
         list_links = remove_repeated_items(list_links)
         list_links = filter_https_links(list_links)
 
+        #acessando links recursivamente
         for link in list_links:
             get_links(link, profundidade, contador, lista)
 
