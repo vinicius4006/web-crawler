@@ -26,11 +26,13 @@ def get_links(url, profundidade, contador, lista):
         soup = BeautifulSoup(response, 'html.parser')
         print('/n',contador, url)       
 
+        # criando dicionario
         listaTemp = dict()
         listaTemp['url'] = url
         listaTemp['meta_tags'] = get_meta_tags(soup)
         listaTemp['body'] = get_body_content(soup)
 
+        # adicionando na lista
         lista.append(listaTemp)
 
         # após essa página for capturada verifica se ela é a ultima, se sim ele retorna se não pega todos os links dela 
@@ -65,6 +67,9 @@ def get_links(url, profundidade, contador, lista):
 lista = []
 get_links("https://olhardigital.com.br/", 1, 0, lista)
 
+
+'''  Apenas para ver o resultado da lista em um txt
 with open("database.json", "w") as f:
     f.write(str(lista))
+'''
 
