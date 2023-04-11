@@ -7,9 +7,7 @@ def get_meta_tags(soup):
     return meta_tags
 
 def get_body_content(soup):
-    body = soup.body
-    body_content = body.get_text()
-    return body_content
+    return soup.body
 
 def remove_repeated_items(list_links):
     return list(set(list_links))
@@ -21,13 +19,20 @@ def filter_https_links(list_links):
             filtered_links.append(link)
     return filtered_links
 
-def get_links(url, profundidade, contador):  
+def get_links(url, profundidade, contador, lista):  
 
     try:
         #captura todos os dados da página e joga no banco de dados
         response = requests.get(url, timeout=1).content
         soup = BeautifulSoup(response, 'html.parser')
         print('/n',contador, url)       
+
+        listaTemp = dict()
+        listaTemp['url'] = url
+        listaTemp['meta_tags'] = get_meta_tags(soup)
+        listaTemp['body'] = get_body_content(soup)
+
+        lista.append(listaTemp)
 
         # após essa página for capturada verifica se ela é a ultima, se sim ele retorna se não pega todos os links dela 
         if profundidade == contador:
@@ -46,8 +51,7 @@ def get_links(url, profundidade, contador):
         list_links = filter_https_links(list_links)
 
         for link in list_links:
-            thread = threading.Thread(target=get_links, args=(link, profundidade, contador))
-            thread.start()
+            get_links(link, profundidade, contador, lista)
 
     except requests.exceptions.Timeout:
         print("Timeout de conexão. ", url)
@@ -57,8 +61,9 @@ def get_links(url, profundidade, contador):
         print("Ocorreu um erro:", e, url)
         return
 
-def get_links_thread(url, profundidade):
-    thread = threading.Thread(target=get_links, args=(url, profundidade, 0))
-    thread.start()
+lista = []
+get_links("https://olhardigital.com.br/", 1, 0, lista)
 
-get_links_thread("https://olhardigital.com.br/", 2)
+with open("database.json", "w") as f:
+    f.write(str(lista))
+
