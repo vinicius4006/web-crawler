@@ -1,5 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
+from firebase_sites import salvarSite, salvarBody, salvarMetaTags
+
 
 def get_meta_tags(soup):
     meta_tags = soup.find_all('meta')
@@ -18,6 +20,11 @@ def filter_https_links(list_links):
             filtered_links.append(link)
     return filtered_links
 
+def dbFirebase(url, body, tags):
+        id = salvarSite(url)
+        salvarBody(id, body)
+        salvarMetaTags(id, tags)
+
 def get_links(url, profundidade, contador, lista):  
 
     try:
@@ -31,7 +38,10 @@ def get_links(url, profundidade, contador, lista):
         listaTemp['url'] = url
         listaTemp['meta_tags'] = get_meta_tags(soup)
         listaTemp['body'] = get_body_content(soup)
-
+        
+        # salvando no firebase
+        dbFirebase(listaTemp['url'], listaTemp['body'], listaTemp['meta_tags'])
+        
         # adicionando na lista
         lista.append(listaTemp)
 
@@ -51,6 +61,8 @@ def get_links(url, profundidade, contador, lista):
         # tratando links
         list_links = remove_repeated_items(list_links)
         list_links = filter_https_links(list_links)
+
+     
 
         #acessando links recursivamente
         for link in list_links:
